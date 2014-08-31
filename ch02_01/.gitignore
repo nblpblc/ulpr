@@ -1,0 +1,15 @@
+# Gradle Files
+.gradle
+.m2
+
+# Eclipse
+.settings
+.classpath
+.project
+
+# Build output directies
+/target
+*/target
+/build
+*/build
+/bin/
