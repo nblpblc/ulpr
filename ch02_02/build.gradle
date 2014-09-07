@@ -24,8 +24,6 @@ repositories {
 
 version = '0.1.0'
 
-
-
 // In this section you declare the dependencies for your production and test code
 dependencies {
   compile('org.apache.kafka:kafka_2.9.2:0.8.1.1') {
