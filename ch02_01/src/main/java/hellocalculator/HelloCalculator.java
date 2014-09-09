@@ -12,7 +12,7 @@ public class HelloCalculator {
 
 	public static void main(String[] args) {
 		
-		final Producer<String, String> producer = Event.createProducer("172.22.13.43:9092");
+		final Producer<String, String> producer = Event.createProducer("ec2-54-68-191-209.us-west-2.compute.amazonaws.com:9092");
 		
 		if (args.length < 2) {
 			String err = "Too fiew inputs (" + args.length + ") ";

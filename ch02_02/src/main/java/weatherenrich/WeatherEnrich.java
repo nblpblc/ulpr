@@ -3,12 +3,14 @@ package weatherenrich;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
+import weatherenrich.events.RawEvent;
 
 public class WeatherEnrich {
 
@@ -32,14 +34,17 @@ public class WeatherEnrich {
 	}
 
 	private static void processEvent(String raw) {
-		System.out.println(raw);
+		Optional<RawEvent> rawEvent = RawEvent.parse(raw);
+		rawEvent.ifPresent(r ->
+		System.out.println(r.asJson()));
 	}
 
 	private static ConsumerConfig createConfig() {
 		Properties props = new Properties();
-		props.put("zookeeper.connect", "172.22.13.43:2181");
+//		TODO: replace local ip to EC2 public ip
+		props.put("zookeeper.connect", "ec2-54-68-191-209.us-west-2.compute.amazonaws.com:2181");
 		props.put("group.id", "group1");
-		props.put("zookeeper.session.timeout.ms", "10000");
+		props.put("zookeeper.session.timeout.ms", "20000");
 		props.put("zookeeper.sync.time.ms", "200");
 		props.put("auto.commit.interval.ms", "1000");
 		return new ConsumerConfig(props);
