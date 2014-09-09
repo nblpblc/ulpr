@@ -23,6 +23,12 @@ public abstract class Event {
 
 	protected static final ObjectMapper MAPPER = JacksonUtils.newMapper();
 	private static final String STREAM = "calc_events";
+	
+	public Event() {
+		this.subject = null;
+		this.verb = null;
+		this.context = null;
+	}
 
 	public Event(String verb) {
 		this.subject = new Subject(getHostname());
@@ -70,6 +76,10 @@ public abstract class Event {
 
 	public static class Subject {
 		public final String hostname;
+		
+		public Subject() {
+			this.hostname = null;
+		}
 
 		public Subject(String hostname) {
 			this.hostname = hostname;
@@ -78,6 +88,10 @@ public abstract class Event {
 
 	public static class Context {
 		public final String timestamp;
+		
+		public Context() {
+			this.timestamp = null;
+		}
 
 		public Context(String timestamp) {
 			this.timestamp = timestamp;
