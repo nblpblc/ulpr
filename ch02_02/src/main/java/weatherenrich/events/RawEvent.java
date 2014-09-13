@@ -41,6 +41,10 @@ public class RawEvent extends Event {
 
 	public static class DirectObject {
 		public final Calculation calculation;
+		
+		public DirectObject() {
+			this.calculation = null;
+		}
 
 		public DirectObject(String operation, String[] args, Integer result) {
 			this.calculation = new Calculation(operation, args, result);
@@ -52,6 +56,13 @@ public class RawEvent extends Event {
 		public String operation;
 		public String[] args;
 		public Integer result;
+
+		public Calculation() {
+			super();
+			this.operation = null;
+			this.args = null;
+			this.result = null;
+		}
 
 		public Calculation(String operation, String[] args, Integer result) {
 			this.operation = operation;
@@ -65,8 +76,10 @@ public class RawEvent extends Event {
 		try {
 			JsonNode node= MAPPER.readTree(json);
 			ProcessingReport report = validator.validate(schema, node);
+			System.out.println("Processing report: " + report);
 			event = (report.isSuccess()) ? Optional.of(MAPPER.readValue(json, RawEvent.class)) : Optional.empty();
 		} catch (IOException | ProcessingException e) {
+			System.out.println("Raw event validation error: " + e);
 			event = Optional.empty();
 		}
 		return event;

@@ -34,9 +34,11 @@ public class WeatherEnrich {
 	}
 
 	private static void processEvent(String raw) {
+		System.out.println("Going to process event: " + raw);
 		Optional<RawEvent> rawEvent = RawEvent.parse(raw);
+		System.out.println("Have processed event: " + rawEvent);
 		rawEvent.ifPresent(r ->
-		System.out.println(r.asJson()));
+		       System.out.println(r.asJson()));
 	}
 
 	private static ConsumerConfig createConfig() {
