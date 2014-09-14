@@ -22,7 +22,7 @@ public abstract class Event {
 	public Context context;
 
 	protected static final ObjectMapper MAPPER = JacksonUtils.newMapper();
-	private static final String STREAM = "calc_events";
+	private static final String STREAM = "enriched_events";
 	
 	public Event() {
 		this.subject = null;
