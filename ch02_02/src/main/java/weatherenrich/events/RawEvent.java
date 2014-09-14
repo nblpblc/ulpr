@@ -14,7 +14,7 @@ import com.github.fge.jsonschema.main.JsonValidator;
 
 public class RawEvent extends Event {
 
-	public final DirectObject directObject;
+	public DirectObject directObject;
 	
 	private static ValidationConfiguration cfg = ValidationConfiguration.newBuilder()
 			.setDefaultVersion(SchemaVersion.DRAFTV4).freeze();

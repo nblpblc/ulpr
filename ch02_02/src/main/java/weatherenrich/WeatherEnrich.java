@@ -1,5 +1,6 @@
 package weatherenrich;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,9 @@ import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
+import weatherenrich.events.EnrichedEvent;
 import weatherenrich.events.RawEvent;
+
 
 public class WeatherEnrich {
 
@@ -37,14 +40,17 @@ public class WeatherEnrich {
 		System.out.println("Going to process event: " + raw);
 		Optional<RawEvent> rawEvent = RawEvent.parse(raw);
 		System.out.println("Have processed event: " + rawEvent);
-		rawEvent.ifPresent(r ->
-		       System.out.println(r.asJson()));
+		rawEvent.ifPresent(r -> {
+			List<String> conditions = Collections.EMPTY_LIST;
+			EnrichedEvent enrichedEvent = new EnrichedEvent(r, 20.0, conditions);
+			System.out.println(enrichedEvent.asJson());
+		});
 	}
 
 	private static ConsumerConfig createConfig() {
 		Properties props = new Properties();
 //		TODO: replace local ip to EC2 public ip
-		props.put("zookeeper.connect", "ec2-54-68-191-209.us-west-2.compute.amazonaws.com:2181");
+		props.put("zookeeper.connect", "ec2-54-68-92-87.us-west-2.compute.amazonaws.com:2181");
 		props.put("group.id", "group1");
 		props.put("zookeeper.session.timeout.ms", "20000");
 		props.put("zookeeper.sync.time.ms", "200");
