@@ -1,11 +1,11 @@
 package weatherenrich;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
@@ -13,6 +13,8 @@ import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
 import weatherenrich.events.EnrichedEvent;
 import weatherenrich.events.RawEvent;
+import WeatherAPI.IWeather;
+import WeatherAPI.WeatherAPI;
 
 
 public class WeatherEnrich {
@@ -41,8 +43,13 @@ public class WeatherEnrich {
 		Optional<RawEvent> rawEvent = RawEvent.parse(raw);
 		System.out.println("Have processed event: " + rawEvent);
 		rawEvent.ifPresent(r -> {
-			List<String> conditions = Collections.EMPTY_LIST;
-			EnrichedEvent enrichedEvent = new EnrichedEvent(r, 20.0, conditions);
+			IWeather weather = WeatherAPI.getWeather("New York City", "NY");
+			List<String> conditions = weather.getConditions()
+					.stream()
+					.map(o -> o.toString())
+					.collect(Collectors.toList());
+			double temp = weather.getDegreesCelsius();
+			EnrichedEvent enrichedEvent = new EnrichedEvent(r, temp, conditions);
 			System.out.println(enrichedEvent.asJson());
 		});
 	}
