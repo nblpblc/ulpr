@@ -11,7 +11,9 @@ import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
+import kafka.javaapi.producer.Producer;
 import weatherenrich.events.EnrichedEvent;
+import weatherenrich.events.Event;
 import weatherenrich.events.RawEvent;
 import WeatherAPI.IWeather;
 import WeatherAPI.WeatherAPI;
@@ -22,6 +24,7 @@ public class WeatherEnrich {
 	public static final String RAW_STREAM = "calc_events";
 
 	public static final void main(String[] args) {
+		Producer<String, String> producer = Event.createProducer("ec2-54-68-151-188.us-west-2.compute.amazonaws.com:9092");
 		ConsumerIterator<byte[], byte[]> it = null;
 		ConsumerConnector consumer = kafka.consumer.Consumer
 				.createJavaConsumerConnector(createConfig());
@@ -33,12 +36,12 @@ public class WeatherEnrich {
 		while (true) {
 			it = stream.iterator();
 			while (it.hasNext()) {
-				processEvent(new String(it.next().message()));
+				processEvent(new String(it.next().message()), producer);
 			}
 		}
 	}
 
-	private static void processEvent(String raw) {
+	private static void processEvent(String raw, Producer<String, String> producer) {
 		System.out.println("Going to process event: " + raw);
 		Optional<RawEvent> rawEvent = RawEvent.parse(raw);
 		System.out.println("Have processed event: " + rawEvent);
@@ -50,14 +53,14 @@ public class WeatherEnrich {
 					.collect(Collectors.toList());
 			double temp = weather.getDegreesCelsius();
 			EnrichedEvent enrichedEvent = new EnrichedEvent(r, temp, conditions);
-			System.out.println(enrichedEvent.asJson());
+			System.out.println("<<Sending event to Kafka enriched stream>>\n" + enrichedEvent.asJson());
+			enrichedEvent.sendTo(producer);
 		});
 	}
 
 	private static ConsumerConfig createConfig() {
 		Properties props = new Properties();
-//		TODO: replace local ip to EC2 public ip
-		props.put("zookeeper.connect", "ec2-54-68-92-87.us-west-2.compute.amazonaws.com:2181");
+		props.put("zookeeper.connect", "ec2-54-68-151-188.us-west-2.compute.amazonaws.com:2181");
 		props.put("group.id", "group1");
 		props.put("zookeeper.session.timeout.ms", "20000");
 		props.put("zookeeper.sync.time.ms", "200");
